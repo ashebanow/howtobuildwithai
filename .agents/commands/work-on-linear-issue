@@ -4,8 +4,8 @@
 if [ $# -eq 0 ]; then
 	echo "Usage: work-on-issue <issue-abbreviation>"
 	echo "Examples:"
-	echo "  work-on-issue MC-123"
-	echo "  work-on-issue https://linear.app/newsbutler/issue/MC-123/issue-title"
+	echo "  work-on-issue AB-123"
+	echo "  work-on-issue https://linear.app/abc/issue/AB-123/issue-title"
 	exit 2
 fi
 
