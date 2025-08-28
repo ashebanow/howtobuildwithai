@@ -10,7 +10,7 @@ if [ $# -eq 0 ]; then
 fi
 
 ISSUE_ARG="$1"
-TEAM_ID="MC"  # Default team ID, can be modified
+TEAM_ID="MC" # Default team ID, can be modified
 
 # Find root directory (where .agents directory is located)
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -101,20 +101,18 @@ ISSUE_NUMBER=$(echo "$ISSUE_ABBREV" | grep -oE '[0-9]+$')
 
 # Execute query - escape the query properly
 JSON_PAYLOAD=$(jq -n --arg query "$QUERY" --argjson number "$ISSUE_NUMBER" \
-  '{query: $query, variables: {number: $number}}')
+	'{query: $query, variables: {number: $number}}')
 
 RESPONSE=$(curl -s -X POST https://api.linear.app/graphql \
-  -H "Authorization: $LINEAR_API_KEY" \
-  -H "Content-Type: application/json" \
-  -d "$JSON_PAYLOAD")
+	-H "Authorization: $LINEAR_API_KEY" \
+	-H "Content-Type: application/json" \
+	-d "$JSON_PAYLOAD")
 
 # Check if curl command was successful
 if [ $? -ne 0 ]; then
 	echo "Error: Could not fetch issue $ISSUE_ABBREV from Linear API"
 	exit 1
 fi
-
-
 
 # Check for API errors
 if echo "$RESPONSE" | jq -e '.errors' >/dev/null 2>&1; then
@@ -183,25 +181,44 @@ if [ -n "$COMMENTS" ]; then
 fi
 
 cat <<'EOF'
+
+
+“AI models are geniuses who start from scratch on every task.” — Noam Brown
+
+Onboard yourself to the current task:
+• Use ultrathink.
+• Explore the codebase.
+• Ask questions if needed.
+
+Goal: Be fully prepared to start working on the task.
+
+Take as long as you need to prepare. Over-preparation is better than under-preparation.
+
 ## Your Tasks
 
-1. **Examine the codebase** - understand context and existing patterns
-2. **Use ultrathink** - deeply analyze the requirements and implications  
-3. **Explore relevant files** - find existing implementations and patterns
-4. **Identify code smells** - potential issues that may arise during implementation
-5. **Consider refactoring needs** - if codebase needs changes to make feature easier
-6. **Create comprehensive plan** covering:
+
+You are an experienced software developer tasked with addressing a Linear issue. Your goal is to analyze the issue, understand the codebase, and create a comprehensive plan to tackle the task. Follow these steps carefully:
+
+1. First, review the above issue.
+
+2. Next, examine the relevant parts of the codebase.
+
+Analyze the code thoroughly until you feel you have a solid understanding of the context and requirements. Analyze existing patterns in the codebase.
+Also look for smells and potential issues that may arise during the implementation and might bite us. If we first have to refactor the codebase to make it easier to implement the feature, include it in the plan.
+
+3. Create a comprehensive plan and todo list for addressing the issue. Consider the following aspects:
    - Required code changes
-   - System impact analysis  
-   - Tests to write/update
+   - Potential impacts on other parts of the system
+   - Necessary tests to be written or updated
    - Documentation updates
    - Performance considerations
    - Security implications
-   - Backwards compatibility
-7. **Create local branch** (`git checkout -b feat/$IDENTIFIER`) but **do NOT push**
-8. **Ask for explicit approval** before starting implementation
+   - Backwards compatibility (if applicable)
+   - Include the reference link to featurebase or any other link that has the source of the user request
 
-Focus on thorough preparation and planning. Over-preparation is better than under-preparation.
+4. Think deeply about all aspects of the task. Consider edge cases, potential challenges, and best practices for addressing the issue.
+5. **ASK FOR EXPLICIT APPROVAL** before starting on the TODO list.
 
-_"Plan ready — please reply **approve** or **revise**."_
+Remember, your task is to create a plan, not to implement the changes. Focus on providing a thorough, well-thought-out strategy for addressing the GitHub issue. Then ASK FOR APPROVAL BEFORE YOU START WORKING on the TODO LIST.
+
 EOF

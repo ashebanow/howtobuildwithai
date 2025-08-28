@@ -33,9 +33,7 @@ You are an experienced software developer tasked with addressing a Linear issue.
 Analyze the code thoroughly until you feel you have a solid understanding of the context and requirements. Analyze existing patterns in the codebase.
 Also look for smells and potential issues that may arise during the implementation and might bite us. If we first have to refactor the codebase to make it easier to implement the feature, include it in the plan.
 
-
 3. Create a comprehensive plan and todo list for addressing the issue. Consider the following aspects:
-
    - Required code changes
    - Potential impacts on other parts of the system
    - Necessary tests to be written or updated
@@ -45,16 +43,7 @@ Also look for smells and potential issues that may arise during the implementati
    - Backwards compatibility (if applicable)
    - Include the reference link to featurebase or any other link that has the source of the user request
 
-5. Think deeply about all aspects of the task. Consider edge cases, potential challenges, and best practices for addressing the issue.
-6. **ASK FOR EXPLICIT APPROVAL** before starting on the TODO list.
+4. Think deeply about all aspects of the task. Consider edge cases, potential challenges, and best practices for addressing the issue.
+5. **ASK FOR EXPLICIT APPROVAL** before starting on the TODO list.
 
 Remember, your task is to create a plan, not to implement the changes. Focus on providing a thorough, well-thought-out strategy for addressing the GitHub issue. Then ASK FOR APPROVAL BEFORE YOU START WORKING on the TODO LIST.
-
-## 🤖 Claude, your concrete steps
-
-1. Call `linear_get_issue` for `{{ARGUMENTS.linear_issue}}` and display key fields.
-2. Run the allowed git Bash commands to inspect code; reference relevant files with `@`.
-3. Create the branch locally (`git checkout -b ...`) but **do NOT push**.
-4. Output the structured plan in Markdown.
-5. End with:
-   > _“Plan ready — please reply **approve** or **revise**.”_
