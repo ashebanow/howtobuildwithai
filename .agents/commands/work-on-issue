@@ -1,0 +1,207 @@
+#!/bin/bash
+
+# Check if issue argument is provided
+if [ $# -eq 0 ]; then
+	echo "Usage: work-on-issue <issue-abbreviation>"
+	echo "Examples:"
+	echo "  work-on-issue MC-123"
+	echo "  work-on-issue https://linear.app/newsbutler/issue/MC-123/issue-title"
+	exit 2
+fi
+
+ISSUE_ARG="$1"
+TEAM_ID="MC"  # Default team ID, can be modified
+
+# Find root directory (where .agents directory is located)
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+ROOT_DIR="$(dirname "$(dirname "$SCRIPT_DIR")")"
+
+# Try to load .env file from root directory
+if [ -f "$ROOT_DIR/.env" ]; then
+	set -a
+	source "$ROOT_DIR/.env"
+	set +a
+fi
+
+# Extract issue abbreviation if URL is provided
+if [[ "$ISSUE_ARG" == *"linear.app"* ]]; then
+	ISSUE_ABBREV=$(echo "$ISSUE_ARG" | grep -oE '[A-Z]+-[0-9]+')
+else
+	ISSUE_ABBREV="$ISSUE_ARG"
+fi
+
+# Validate issue format
+if [[ ! "$ISSUE_ABBREV" =~ ^[A-Z]+-[0-9]+$ ]]; then
+	echo "Error: Invalid issue format. Expected format: TEAM-123"
+	exit 1
+fi
+
+# Check if LINEAR_API_KEY is set
+if [ -z "$LINEAR_API_KEY" ]; then
+	echo "Error: LINEAR_API_KEY environment variable not set"
+	echo "Please set your Linear API key: export LINEAR_API_KEY=your_token_here"
+	exit 1
+fi
+
+# GraphQL query for Linear issue - search by identifier (shorthand)
+read -r -d '' QUERY <<'EOF'
+query($number: Float!) {
+  issues(filter: { number: { eq: $number } }) {
+    nodes {
+      id
+      identifier
+      title
+      description
+      priority
+      state {
+        name
+        type
+      }
+      assignee {
+        name
+        email
+      }
+      creator {
+        name
+        email
+      }
+      team {
+        name
+        key
+      }
+      labels {
+        nodes {
+          name
+          color
+        }
+      }
+      project {
+        name
+      }
+      estimate
+      url
+      createdAt
+      updatedAt
+      comments {
+        nodes {
+          body
+          user {
+            name
+          }
+          createdAt
+        }
+      }
+    }
+  }
+}
+EOF
+
+# Extract just the number part from MC-91 format
+ISSUE_NUMBER=$(echo "$ISSUE_ABBREV" | grep -oE '[0-9]+$')
+
+# Execute query - escape the query properly
+JSON_PAYLOAD=$(jq -n --arg query "$QUERY" --argjson number "$ISSUE_NUMBER" \
+  '{query: $query, variables: {number: $number}}')
+
+RESPONSE=$(curl -s -X POST https://api.linear.app/graphql \
+  -H "Authorization: $LINEAR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d "$JSON_PAYLOAD")
+
+# Check if curl command was successful
+if [ $? -ne 0 ]; then
+	echo "Error: Could not fetch issue $ISSUE_ABBREV from Linear API"
+	exit 1
+fi
+
+
+
+# Check for API errors
+if echo "$RESPONSE" | jq -e '.errors' >/dev/null 2>&1; then
+	echo "Error: Linear API returned an error:"
+	echo "$RESPONSE" | jq -r '.errors[].message'
+	exit 1
+fi
+
+# Extract issue data
+ISSUE_DATA=$(echo "$RESPONSE" | jq -r '.data.issues.nodes[0]')
+if [ "$ISSUE_DATA" == "null" ]; then
+	echo "Error: Issue $ISSUE_ABBREV not found"
+	exit 1
+fi
+
+# Extract fields
+TITLE=$(echo "$ISSUE_DATA" | jq -r '.title')
+DESCRIPTION=$(echo "$ISSUE_DATA" | jq -r '.description // ""')
+IDENTIFIER=$(echo "$ISSUE_DATA" | jq -r '.identifier')
+PRIORITY=$(echo "$ISSUE_DATA" | jq -r '.priority // "None"')
+STATE=$(echo "$ISSUE_DATA" | jq -r '.state.name')
+ASSIGNEE=$(echo "$ISSUE_DATA" | jq -r '.assignee.name // "Unassigned"')
+CREATOR=$(echo "$ISSUE_DATA" | jq -r '.creator.name')
+TEAM=$(echo "$ISSUE_DATA" | jq -r '.team.name')
+URL=$(echo "$ISSUE_DATA" | jq -r '.url')
+ESTIMATE=$(echo "$ISSUE_DATA" | jq -r '.estimate // "Not estimated"')
+
+# Output formatted content
+cat <<EOF
+Deep-dive on this Linear issue, explore the codebase, and propose a comprehensive plan.
+
+# $TITLE ($IDENTIFIER)
+**Team:** $TEAM  
+**State:** $STATE  
+**Priority:** $PRIORITY  
+**Assignee:** $ASSIGNEE  
+**Creator:** $CREATOR  
+**Estimate:** $ESTIMATE  
+**URL:** $URL  
+
+## Description
+$DESCRIPTION
+
+EOF
+
+# Add labels if present
+LABELS=$(echo "$ISSUE_DATA" | jq -r '.labels.nodes[] | .name' | tr '\n' ', ' | sed 's/, $//')
+if [ -n "$LABELS" ]; then
+	echo "**Labels:** $LABELS"
+	echo
+fi
+
+# Add project if present
+PROJECT=$(echo "$ISSUE_DATA" | jq -r '.project.name // empty')
+if [ -n "$PROJECT" ]; then
+	echo "**Project:** $PROJECT"
+	echo
+fi
+
+# Add comments if present
+COMMENTS=$(echo "$ISSUE_DATA" | jq -r '.comments.nodes[] | "**@\(.user.name)** (\(.createdAt | split("T")[0])):\n\(.body)\n"')
+if [ -n "$COMMENTS" ]; then
+	echo "## Comments"
+	echo
+	echo "$COMMENTS"
+fi
+
+cat <<'EOF'
+## Your Tasks
+
+1. **Examine the codebase** - understand context and existing patterns
+2. **Use ultrathink** - deeply analyze the requirements and implications  
+3. **Explore relevant files** - find existing implementations and patterns
+4. **Identify code smells** - potential issues that may arise during implementation
+5. **Consider refactoring needs** - if codebase needs changes to make feature easier
+6. **Create comprehensive plan** covering:
+   - Required code changes
+   - System impact analysis  
+   - Tests to write/update
+   - Documentation updates
+   - Performance considerations
+   - Security implications
+   - Backwards compatibility
+7. **Create local branch** (`git checkout -b feat/$IDENTIFIER`) but **do NOT push**
+8. **Ask for explicit approval** before starting implementation
+
+Focus on thorough preparation and planning. Over-preparation is better than under-preparation.
+
+_"Plan ready — please reply **approve** or **revise**."_
+EOF
