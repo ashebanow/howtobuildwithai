@@ -4,8 +4,6 @@ argument-hint: "<GitHub issue number, #number, or URL>"
 usage: "/work-on-github-issue <issue number or URL>"
 ---
 
-"AI models are geniuses who start from scratch on every task." — Noam Brown
-
 Onboard yourself to the current task:
 • Use ultrathink.
 • Explore the codebase.
@@ -24,18 +22,21 @@ You are an experienced software developer tasked with addressing a GitHub issue.
 <issue_reference>{{ARGUMENTS.github_issue}}</issue_reference>
 
 Parse the issue reference:
+
 - If it's a number or starts with #, use it as the issue number
 - If it's a URL, extract the issue number from it
 - If --repo is provided, use that repository, otherwise use the current repository
 
 Use the gh CLI to fetch the issue details:
+
 ```bash
 gh issue view <issue_number> --json title,body,labels,assignees,milestone,state,url,comments
 ```
 
 If MCP GitHub tools are available, you can also use:
-- mcp__github__get_issue for detailed issue information
-- mcp__github__get_issue_comments for discussion context
+
+- mcp**github**get_issue for detailed issue information
+- mcp**github**get_issue_comments for discussion context
 
 2. Analyze the issue thoroughly:
    - Understand the problem or feature request
@@ -81,18 +82,23 @@ If MCP GitHub tools are available, you can also use:
 Present your analysis and plan in this structure:
 
 ### Issue Summary
+
 [Your understanding of the issue]
 
 ### Current State Analysis
+
 [What you found in the codebase]
 
 ### Implementation Plan
+
 [Numbered todo list with specific tasks]
 
 ### Considerations & Risks
+
 [Any concerns, edge cases, or potential issues]
 
 ### Questions for Clarification
+
 [Any ambiguities that need resolution]
 
 ---

@@ -1,10 +1,8 @@
 ---
 description: Turn a raw bug report into a GitHub issue with appropriate labels and metadata.
 argument-hint: "<bug report text>"
-usage: "/github-issue-from-bug \"App crashes when uploading a 2 GB file – stack trace: ...\""
+usage: '/github-issue-from-bug "App crashes when uploading a 2 GB file – stack trace: ..."'
 ---
-
-"AI models are geniuses who start from scratch on every task." — Noam Brown
 
 Onboard yourself to the current task:
 • Use ultrathink.
@@ -30,11 +28,13 @@ Follow these steps to complete the task:
 ### 1. Repository Context Research
 
 First, determine the repository context:
+
 - Check if you're in a Git repository with: `git remote -v`
 - If not in a repo, ask the user to specify with `--repo owner/name`
 - Verify GitHub CLI access: `gh auth status`
 
 Once you have the repository:
+
 - Examine README.md for project overview and conventions
 - Check `.github/ISSUE_TEMPLATE/` for issue templates
 - Look for CONTRIBUTING.md for issue guidelines
@@ -46,6 +46,7 @@ Once you have the repository:
 ### 2. Analyze the Bug Report
 
 Evaluate the bug report for:
+
 - **Severity**: Is this causing data loss, security issues, or crashes?
 - **Impact**: How many users are affected?
 - **Reproducibility**: Can this be consistently reproduced?
@@ -56,18 +57,21 @@ Evaluate the bug report for:
 Based on your analysis, determine appropriate GitHub labels:
 
 **Severity Labels**:
+
 - `critical` / `P0`: Production down, security vulnerability, data loss
 - `high-priority` / `P1`: Major functionality broken, no workaround
 - `medium-priority` / `P2`: Important issue with workaround available
 - `low-priority` / `P3`: Minor issue, cosmetic problems
 
 **Type Labels**:
+
 - `bug`: Something isn't working as expected
 - `enhancement`: New feature or request
 - `documentation`: Documentation improvements
 - `performance`: Performance-related issues
 
 **Additional Labels** (check available labels with `gh label list`):
+
 - `good first issue`: If suitable for newcomers
 - `help wanted`: If community contributions are welcome
 - Component-specific labels (e.g., `frontend`, `backend`, `api`)
@@ -77,27 +81,34 @@ Based on your analysis, determine appropriate GitHub labels:
 Create a well-structured issue with:
 
 **Title** (8-12 words):
+
 - Be specific and searchable
 - Include the affected component if relevant
 - Format: `[Component] Brief description of the problem`
 
 **Body** (use appropriate template if available):
+
 ```markdown
 ## Description
+
 [Clear, concise description of the bug]
 
 ## Steps to Reproduce
+
 1. [First step]
 2. [Second step]
 3. [...]
 
 ## Expected Behavior
+
 [What should happen]
 
 ## Actual Behavior
+
 [What actually happens]
 
 ## Environment
+
 - OS: [e.g., macOS 14.0, Ubuntu 22.04]
 - Version: [project version or commit hash]
 - Browser: [if applicable]
@@ -105,7 +116,9 @@ Create a well-structured issue with:
 
 ## Error Messages / Stack Trace
 ```
+
 [Include any error messages or stack traces]
+
 ```
 
 ## Additional Context
@@ -134,11 +147,13 @@ gh issue create \
 ```
 
 Or if MCP GitHub tools are available:
+
 - Use `mcp__github__create_issue` for more control
 
 ### 6. Present the Draft
 
 Before creating the issue:
+
 1. Show the draft issue to the user
 2. Highlight any assumptions made
 3. Ask for confirmation or modifications

@@ -4,8 +4,6 @@ argument-hint: "<pr_number>"
 usage: "/pr-review 123"
 ---
 
-“AI models are geniuses who start from scratch on every task.” — Noam Brown
-
 Onboard yourself to the current task:
 • Use ultrathink.
 • Explore the codebase.
@@ -26,18 +24,16 @@ You are a staff software engineer known for insightful, to the point code review
    git diff origin/main...HEAD > /tmp/pr.diff
    ```
 
-   _Summarise files changed and total LOC; if > 400 LoC, flag scope risk._
+   _Summarise files changed and total LOC; if > 400 LoC, flag scope risk._
 
 2. **Install dependencies & run tests**
 
    _Auto‑detect stack:_
-
    - If `package.json` → `npm install && npm test`
    - If `pyproject.toml` or `requirements.txt` → create venv, `pip install -r requirements.txt && pytest`
    - Fall back to `make test` if `Makefile` exists.
 
 3. **Static & security analysis**
-
    - **JavaScript/TypeScript:** `npx eslint .`
 
    - **Python:** `bandit -r .`
@@ -59,7 +55,7 @@ You are a staff software engineer known for insightful, to the point code review
    ```markdown
    ### Summary
 
-   - PR #{{ARGUMENTS.pr_number}}, LOC changed, intent
+   - PR #{{ARGUMENTS.pr_number}}, LOC changed, intent
 
    ### Design & Architecture
 
@@ -91,4 +87,4 @@ You are a staff software engineer known for insightful, to the point code review
 
    End output with:
 
-   > _“Review ready — reply **approve** to post on GitHub, or **revise** for changes.”_
+   > _"Review ready — reply **approve** to post on GitHub, or **revise** for changes."_

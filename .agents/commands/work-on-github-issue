@@ -83,12 +83,12 @@ cat <<EOF
 Deep-dive on this GitHub issue, explore the codebase, and propose a comprehensive plan.
 
 # $TITLE (#$ISSUE_NUMBER)
-**State:** $STATE  
-**Author:** $AUTHOR  
-**Assignees:** ${ASSIGNEES:-None}  
-**Labels:** ${LABELS:-None}  
-**Created:** $CREATED_AT  
-**URL:** $URL  
+**State:** $STATE
+**Author:** $AUTHOR
+**Assignees:** ${ASSIGNEES:-None}
+**Labels:** ${LABELS:-None}
+**Created:** $CREATED_AT
+**URL:** $URL
 
 ## Description
 $BODY
@@ -104,9 +104,6 @@ if [ -n "$COMMENTS" ]; then
 fi
 
 cat <<'EOF'
-
-
-“AI models are geniuses who start from scratch on every task.” — Noam Brown
 
 Onboard yourself to the current task:
 • Use ultrathink.

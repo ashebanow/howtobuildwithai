@@ -1,4 +1,8 @@
-“AI models are geniuses who start from scratch on every task.” — Noam Brown
+---
+description: Clean up technical debt by removing dead code, fixing linting issues, and improving code quality.
+argument-hint: "<file or directory path>"
+usage: "/clean src/" or "/clean app.js"
+---
 
 Onboard yourself to the current task:
 • Use ultrathink.
@@ -14,7 +18,6 @@ Clean up technical debt in $ARGUMENTS.
 Steps:
 
 1. Identify cleanup targets:
-
    - Scan for TODO, FIXME, HACK, XXX comments
    - Find commented-out code blocks
    - Locate unused imports and variables
@@ -23,7 +26,6 @@ Steps:
    - Find console.log/print debug statements
 
 2. Code quality improvements:
-
    - Fix linting errors and warnings
    - Apply consistent code formatting
    - Standardize naming conventions
@@ -32,7 +34,6 @@ Steps:
    - Remove unnecessary type assertions
 
 3. Remove dead code:
-
    - Delete commented-out code older than 3 months
    - Remove unused functions and methods
    - Clean up unreferenced files
@@ -41,7 +42,6 @@ Steps:
    - Clean up A/B test code for completed experiments
 
 4. Consolidate duplication:
-
    - Identify duplicate code blocks
    - Extract common functionality to utilities
    - Merge similar functions with parameters
@@ -49,7 +49,6 @@ Steps:
    - Unify error handling patterns
 
 5. Update deprecated usage:
-
    - Replace deprecated library methods
    - Update to current API versions
    - Migrate from legacy patterns
@@ -57,7 +56,6 @@ Steps:
    - Fix deprecated test patterns
 
 6. File organization:
-
    - Remove empty files and directories
    - Organize imports (grouped and sorted)
    - Move files to appropriate directories
@@ -85,4 +83,4 @@ Output:
 - Lines of code removed
 - Performance impact (if any)
 - Risk assessment for changes
--
+- Follow-up tasks identified

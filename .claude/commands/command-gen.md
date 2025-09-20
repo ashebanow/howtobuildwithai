@@ -1,4 +1,8 @@
-“AI models are geniuses who start from scratch on every task.” — Noam Brown
+---
+description: Analyze completed work and generate a reusable slash command for similar tasks.
+argument-hint: ""
+usage: "/command-gen"
+---
 
 Onboard yourself to the current task:
 • Use ultrathink.
@@ -48,6 +52,5 @@ Review everything we've accomplished in this session and design a slash command 
 
 - What parts could be fully automated vs. need human review
 - Edge cases or variations to handle
-- Integration points with existing tools/workflows
 
-Focus on creating a command that would save significant time for similar future tasks while maintaining the quality and approach we used here. Prioritize the most valuable and repeatable aspects of our work.
+Based on our work, create a complete markdown file ready to save as `/project:{{command-name}}.md` that captures this workflow for future use.

@@ -1,4 +1,9 @@
 #!/bin/bash
+# ---
+# description: Analyze PR feedback and suggest specific code changes to address each review comment.
+# argument-hint: "<pr-number-or-url>"
+# usage: "resolve-pr-comments 123" or "resolve-pr-comments https://github.com/owner/repo/pull/123"
+# ---
 
 # Check if PR argument is provided
 if [ $# -eq 0 ]; then
@@ -123,13 +128,24 @@ echo "$PR_DATA" | jq -r '.reviews.nodes[].comments.nodes[] | "**@\(.author.login
 cat <<'EOF'
 ## Your Tasks
 
-1. **Examine the codebase** - understand context of commented files
-2. Feed in the files into the oracle and tell it to:
- - **Categorize feedback** - critical issues vs suggestions
- - **Provide specific resolutions** - exact changes needed for each comment
- - **Create implementation plan** - order of changes, files to modify
+1. **Examine the codebase** - Read and understand the files mentioned in review comments
 
-Focus on actionable solutions for each piece of feedback.
+2. **Analyze the feedback systematically**:
+   - **Categorize each comment**: Identify which are critical issues (bugs, security, breaking changes) vs suggestions (style, optimization, nice-to-have)
+   - **Determine specific resolutions**: For each comment, specify the exact code changes needed (what lines to modify and how)
+   - **Create implementation plan**: Order the changes by priority and dependency, listing which files to modify in what sequence
+
+3. **For each review comment**:
+   - Read the relevant file and surrounding code context
+   - Understand what the reviewer is asking for
+   - Propose the specific code change that addresses their concern
+   - Note any potential side effects or related changes needed
+
+4. **Produce a structured response**:
+   - Group changes by file
+   - Mark critical issues that must be addressed
+   - Provide code snippets showing the exact changes
+   - Explain the reasoning for each change
+
+Focus on actionable, specific solutions rather than general advice. Each piece of feedback should have a concrete resolution.
 EOF
-
-exit 1

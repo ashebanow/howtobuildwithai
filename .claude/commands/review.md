@@ -1,6 +1,10 @@
-# Code Review - Execute top to bottom
+---
+description: Perform systematic code review against specifications and documentation.
+argument-hint: "<scope or commit range>"
+usage: "/review HEAD~1" or "/review"
+---
 
-“AI models are geniuses who start from scratch on every task.” — Noam Brown
+# Code Review - Execute top to bottom
 
 Onboard yourself to the current task:
 • Use ultrathink.
@@ -42,91 +46,110 @@ With the identified Scope use `git diff` (on default: `git diff HEAD~1`) to find
 **Detect and run project's quality tools:**
 
 1. **Python projects:**
-
    - If `pyproject.toml` with tool configs: Check for `ruff`, `black`, `mypy`, `flake8`, `pylint`
    - If `.ruff.toml` or `ruff.toml`: Run `ruff check .`
    - If `setup.cfg` or `.flake8`: Run `flake8`
    - Type checking: If `mypy.ini` or mypy in configs: Run `mypy .`
 
 2. **JavaScript/TypeScript projects:**
-
-   - If `package.json` exists: Check "scripts" for "lint", "type-check", "format"
-   - If `.eslintrc*` exists: Run appropriate eslint command
-   - If `tsconfig.json` exists: Check for type-check script or run `tsc --noEmit`
-   - If `.prettierrc*` exists: Check formatting
+   - If `package.json` has scripts: Run `npm run lint` and `npm run type-check` if present
+   - ESLint: If `.eslintrc*`: Run `npx eslint .`
+   - TypeScript: If `tsconfig.json`: Run `npx tsc --noEmit`
+   - Prettier: If `.prettierrc*`: Run `npx prettier --check .`
 
 3. **Other languages:**
-   - Rust: If `Cargo.toml`: Run `cargo fmt --check` and `cargo clippy`
-   - Go: If `go.mod`: Run `go fmt ./...` and `go vet ./...`
-   - Ruby: If `.rubocop.yml`: Run `rubocop`
-   - PHP: If `phpcs.xml` or `.php-cs-fixer.php`: Run appropriate tool
+   - Rust: `cargo check`, `cargo clippy`
+   - Go: `go vet ./...`, `golangci-lint run`
+   - Ruby: `rubocop`
 
-**Execute detected tools:**
+**Note**: Only run tools that are configured in the project. Skip if tools aren't installed.
 
-- RUN each detected tool
-- For auto-fixable issues: Apply fixes if safe (formatting only)
-- For non-fixable issues: Note them in the findings
+### 4. Find relevant Specification and Documentation
 
-**If no linting tools found:** Skip this step (not all projects use linters)
+Search for and read any relevant documentation:
 
-**Critical Issues (that should influence FAIL verdict):**
-
-- Type errors that would cause runtime failures
-- Syntax errors
-- Critical security issues (if detected by linter)
-
-### 4. Find relevant Specifications and Documentation
-
-- FIND the Task, Sprint and Milestone involved in the work that was done and output your findings
-- Navigate to `.simone/03_SPRINTS/` to find the current sprint directory
-- READ the sprint meta file to understand sprint objectives and deliverables
-- If a specific task is in scope, find and READ the task file in the sprint directory
-- IDENTIFY related requirements in `.simone/02_REQUIREMENTS/` for the current milestone
-- READ involved Documents especially in `.simone/01_PROJECT_DOCS/` and `.simone/02_REQUIREMENTS/`
-- **IMPORTANT:** Focus on current sprint deliverables, not future milestone features
+- Look for `README.md`, `ARCHITECTURE.md`, `CONTRIBUTING.md`
+- Check for API documentation in `/docs` or `/documentation`
+- Find any ADRs (Architecture Decision Records) in `/adr` or `/decisions`
+- Look for inline documentation (docstrings, JSDoc comments)
+- Check for specification files (OpenAPI/Swagger, GraphQL schemas)
+- Review any relevant issue descriptions or PRs referenced in commits
 
 ### 5. Compare code changes against Documentation and Requirements
 
-- Use DEEP THINKING to compare changes against found Requirements and Specs.
-- Compare especially these things:
-  - **Data models / schemas** — fields, types, constraints, relationships.
-  - **APIs / interfaces** — endpoints, params, return shapes, status codes, errors.
-  - **Config / environment** — keys, defaults, required/optional.
-  - **Behaviour** — business rules, side-effects, error handling.
-  - **Quality** — naming, formatting, tests, linter status.
+For each significant code change:
 
-**IMPORTANT**:
+- Check if it aligns with documented architecture and design patterns
+- Verify API contracts are maintained
+- Ensure naming conventions from docs are followed
+- Validate that security requirements are met
+- Confirm performance considerations are addressed
+- Check if new features have corresponding documentation updates
 
-- Deviations from the Specs is not allowed. Not even small ones. Be very picky here!
-- If in doubt call a **FAIL** and ask the User.
-- Zero tolerance on not following the Specs and Documentation.
+### 6. Analyze possible differences
 
-### 6. Analyze the differences
+Categorize any discrepancies found:
 
-- Analyze any difference found
-- Give every issue a Severity Score
-- Severity ranges from 1 (low) to 10 (high)
-- Remember List of issues and Scores for output
+1. **Critical Issues** (Must Fix):
+   - Security vulnerabilities
+   - Breaking changes to public APIs
+   - Data loss risks
+   - Performance regressions
+
+2. **Important Issues** (Should Fix):
+   - Logic errors
+   - Missing error handling
+   - Incomplete implementations
+   - Documentation mismatches
+
+3. **Minor Issues** (Consider Fixing):
+   - Code style inconsistencies
+   - Missing tests
+   - TODO comments without tickets
+   - Optimization opportunities
 
 ### 7. Provide PASS/FAIL verdict with details
 
-- Call a **FAIL** on any differences found.
-  - Zero Tolerance - even on well meant additions.
-  - Leave it on the user to decide if small changes are allowed.
-- Only **PASS** if no discrepancy appeared.
+## Review Summary
 
-#### IMPORTANT: Output Format
+**Verdict: [PASS/FAIL]**
 
-- Output the results of your review to the task's **## Output Log** section in the task file
-- Find the task file in `.simone/03_SPRINTS/` or `.simone/04_GENERAL_TASKS/` based on the scope
-- Append the review results to the existing Output Log with timestamp
-- Output Format:
-  ```
-  [YYYY-MM-DD HH:MM]: Code Review - PASS/FAIL
-  Result: **FAIL/PASS** Your final decision on if it's a PASS or a FAIL.
-  **Scope:** Inform the user about the review scope.
-  **Findings:** Detailed list with all Issues found and Severity Score.
-  **Summary:** Short summary on what is wrong or not.
-  **Recommendation:** Your personal recommendation on further steps.
-  ```
-- Also output a brief result summary to the console for immediate feedback
+### Statistics
+
+- Files changed: X
+- Lines added: Y
+- Lines removed: Z
+- Test coverage: N%
+
+### Critical Issues Found: [Count]
+
+[List each with file:line and explanation]
+
+### Important Issues Found: [Count]
+
+[List each with file:line and explanation]
+
+### Minor Issues Found: [Count]
+
+[List each with file:line and explanation]
+
+### Positive Observations
+
+- [What was done well]
+- [Good patterns followed]
+- [Improvements made]
+
+### Recommendations
+
+1. [Specific actionable items]
+2. [Prioritized by impact]
+
+### Automated Check Results
+
+- Linting: [PASS/FAIL] - [Details]
+- Type checking: [PASS/FAIL] - [Details]
+- Tests: [PASS/FAIL] - [Details]
+
+---
+
+**Note**: A PASS verdict means no critical issues were found. Important and minor issues may still exist but don't block approval.
